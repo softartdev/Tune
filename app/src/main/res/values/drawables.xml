@@ -1,0 +1,5 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <item name="ic_menu_sounds" type="drawable">@drawable/ic_sounds_black_24dp</item>
+    <item name="ic_menu_podcasts" type="drawable">@drawable/ic_podcasts_black_24dp</item>
+    <item name="ic_menu_downloads" type="drawable">@drawable/ic_downloads_black_24dp</item>
+</resources>
