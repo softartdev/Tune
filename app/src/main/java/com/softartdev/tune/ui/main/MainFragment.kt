@@ -1,15 +1,14 @@
-package com.softartdev.tune.ui
+package com.softartdev.tune.ui.main
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.softartdev.tune.MainActivity.Companion.DOWNLOADS_TAG
-import com.softartdev.tune.MainActivity.Companion.PODCASTS_TAG
-import com.softartdev.tune.MainActivity.Companion.SOUNDS_TAG
-
 import com.softartdev.tune.R
+import com.softartdev.tune.ui.main.MainActivity.Companion.DOWNLOADS_TAG
+import com.softartdev.tune.ui.main.MainActivity.Companion.PODCASTS_TAG
+import com.softartdev.tune.ui.main.MainActivity.Companion.SOUNDS_TAG
 import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment() {
