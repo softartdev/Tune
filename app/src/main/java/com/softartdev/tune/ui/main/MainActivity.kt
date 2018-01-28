@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             supportFragmentManager.beginTransaction().show(selectedFragment).commit()
         } else {
             //if the fragment does not exist, add it to fragment manager.
-            selectedFragment = MainFragment.newInstance(tag)
+            selectedFragment = MainFileFragment()
             supportFragmentManager.beginTransaction().add(R.id.main_frame_layout, selectedFragment, tag).commit()
         }
         hideOthers(tag)

@@ -2,6 +2,7 @@ package com.softartdev.tune.di.component
 
 import android.app.Application
 import android.content.Context
+import com.softartdev.tune.data.DataManager
 import com.softartdev.tune.di.ApplicationContext
 import com.softartdev.tune.di.module.AppModule
 import dagger.Component
@@ -15,5 +16,7 @@ interface AppComponent {
     fun context(): Context
 
     fun application(): Application
+
+    fun dataManager(): DataManager
 
 }
