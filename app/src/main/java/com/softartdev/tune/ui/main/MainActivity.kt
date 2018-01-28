@@ -1,4 +1,4 @@
-package com.softartdev.tune
+package com.softartdev.tune.ui.main
 
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -6,7 +6,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import com.softartdev.tune.ui.MainFragment
+import com.softartdev.tune.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             supportFragmentManager.beginTransaction().show(selectedFragment).commit()
         } else {
             //if the fragment does not exist, add it to fragment manager.
-            selectedFragment = MainFragment.newInstance(tag)
+            selectedFragment = MainFileFragment()
             supportFragmentManager.beginTransaction().add(R.id.main_frame_layout, selectedFragment, tag).commit()
         }
         hideOthers(tag)
