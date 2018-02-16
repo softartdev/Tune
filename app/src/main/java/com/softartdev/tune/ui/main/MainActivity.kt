@@ -76,9 +76,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
-        val SOUNDS_TAG = "sounds_tag"
-        val PODCASTS_TAG = "podcasts_tag"
-        val DOWNLOADS_TAG = "downloads_tag"
+        const val SOUNDS_TAG = "sounds_tag"
+        const val PODCASTS_TAG = "podcasts_tag"
+        const val DOWNLOADS_TAG = "downloads_tag"
         private val TAGS = arrayOf(SOUNDS_TAG, PODCASTS_TAG, DOWNLOADS_TAG)
     }
 }

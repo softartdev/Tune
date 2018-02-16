@@ -160,7 +160,7 @@ class MainFileFragment : BaseFragment(), MainFileView, MainFileAdapter.ClickList
     }
 
     companion object {
-        internal val REQUEST_PERMISSION_EXTERNAL_STORAGE = 1004
+        internal const val REQUEST_PERMISSION_EXTERNAL_STORAGE = 1004
     }
 
 }
