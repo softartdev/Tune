@@ -2,7 +2,8 @@ package com.softartdev.tune.di.component
 
 import com.softartdev.tune.di.PerFragment
 import com.softartdev.tune.di.module.FragmentModule
-import com.softartdev.tune.ui.main.MainFileFragment
+import com.softartdev.tune.ui.main.file.MainFileFragment
+import com.softartdev.tune.ui.main.media.MainMediaFragment
 import dagger.Subcomponent
 
 /**
@@ -12,4 +13,5 @@ import dagger.Subcomponent
 @Subcomponent(modules = [FragmentModule::class])
 interface FragmentComponent {
     fun inject(mainFileFragment: MainFileFragment)
+    fun inject(mainFileFragment: MainMediaFragment)
 }

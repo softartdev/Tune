@@ -1,4 +1,4 @@
-package com.softartdev.tune.ui.main
+package com.softartdev.tune.ui.main.file
 
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.RecyclerView

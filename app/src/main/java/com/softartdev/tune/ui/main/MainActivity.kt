@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.softartdev.tune.R
+import com.softartdev.tune.ui.main.file.MainFileFragment
+import com.softartdev.tune.ui.main.media.MainMediaFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_sounds -> showSelectedFragment(SOUNDS_TAG)
             R.id.nav_podcasts -> showSelectedFragment(PODCASTS_TAG)
             R.id.nav_downloads -> showSelectedFragment(DOWNLOADS_TAG)
+            R.id.nav_tracks -> showSelectedFragment(TRACKS_TAG)
         }
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
@@ -55,7 +58,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             supportFragmentManager.beginTransaction().show(selectedFragment).commit()
         } else {
             //if the fragment does not exist, add it to fragment manager.
-            selectedFragment = MainFileFragment()
+            selectedFragment = if (tag == TRACKS_TAG) {
+                MainMediaFragment()
+            } else {
+                MainFileFragment()
+            }
             supportFragmentManager.beginTransaction().add(R.id.main_frame_layout, selectedFragment, tag).commit()
         }
         hideOthers(tag)
@@ -79,6 +86,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         const val SOUNDS_TAG = "sounds_tag"
         const val PODCASTS_TAG = "podcasts_tag"
         const val DOWNLOADS_TAG = "downloads_tag"
-        private val TAGS = arrayOf(SOUNDS_TAG, PODCASTS_TAG, DOWNLOADS_TAG)
+        const val TRACKS_TAG = "tracks_tag"
+        private val TAGS = arrayOf(SOUNDS_TAG, PODCASTS_TAG, DOWNLOADS_TAG, TRACKS_TAG)
     }
 }

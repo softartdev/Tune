@@ -7,6 +7,7 @@
     <string name="sounds">Sounds</string>
     <string name="podcasts">Podcasts</string>
     <string name="downloads">Downloads</string>
+    <string name="tracks">Tracks</string>
 
     <string name="error_title">Oops</string>
     <string name="error_message">There was a problem loading the pokemon, please try again!</string>

@@ -1,6 +1,7 @@
 package com.softartdev.tune.data
 
 import android.os.Environment
+import android.support.v4.media.MediaBrowserCompat
 import io.reactivex.Single
 import java.io.File
 import javax.inject.Inject
@@ -27,6 +28,10 @@ constructor() {
 
             dirDownloads.listFiles() ?: arrayOfNulls(0)
         }
+    }
+
+    fun getMediaItems(): Single<List<MediaBrowserCompat.MediaItem>> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

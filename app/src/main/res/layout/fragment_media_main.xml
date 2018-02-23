@@ -1,32 +1,32 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.softartdev.tune.ui.main.file.MainFileFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.softartdev.tune.ui.main.media.MainMediaFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/files_swipe_refresh"
+        android:id="@+id/media_swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/files_recycler_view"
+            android:id="@+id/media_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            tools:listitem="@layout/item_file"/>
+            tools:listitem="@layout/item_media"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.softartdev.tune.ui.common.ErrorView
-        android:id="@+id/files_error_view"
+        android:id="@+id/media_error_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:visibility="gone"/>
 
     <com.softartdev.tune.ui.common.ProgressView
-        android:id="@+id/files_progress_view"
+        android:id="@+id/media_progress_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"/>

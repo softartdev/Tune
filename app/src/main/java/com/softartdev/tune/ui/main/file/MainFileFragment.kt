@@ -1,4 +1,4 @@
-package com.softartdev.tune.ui.main
+package com.softartdev.tune.ui.main.file
 
 import android.Manifest
 import android.app.Activity
@@ -72,7 +72,7 @@ class MainFileFragment : BaseFragment(), MainFileView, MainFileAdapter.ClickList
                 DOWNLOADS_TAG -> mainFilePresenter.files(Environment.DIRECTORY_DOWNLOADS)
             }
         } else {
-            rxPermissions!!.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+            rxPermissions!!.request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .subscribe { granted ->
                         if (granted) {
                             showDownloadsIfPermissionGranted()
