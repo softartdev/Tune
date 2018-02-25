@@ -17,44 +17,46 @@
 package com.softartdev.tune.music;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 
 /*
 Static methods useful for activities
  */
 public class MusicUtils {
-    public static final String TAG_MEDIA_ID = "__MEDIA_ID";
-    public static final String TAG_PARENT_ITEM = "__PARENT_ITEM";
-    public static final String TAG_WITH_TABS = "__WITH_TABS";
 
-    // A really simple BitmapDrawable-like class, that doesn't do
-    // scaling, dithering or filtering.
-    private static class FastBitmapDrawable extends Drawable {
-        private Bitmap mBitmap;
-        public FastBitmapDrawable(Bitmap b) {
-            mBitmap = b;
-        }
-        @Override
-        public void draw(Canvas canvas) {
-            canvas.drawBitmap(mBitmap, 0, 0, null);
-        }
-        @Override
-        public int getOpacity() {
-            return PixelFormat.OPAQUE;
-        }
-        @Override
-        public void setAlpha(int alpha) {}
-        @Override
-        public void setColorFilter(ColorFilter cf) {}
-    }
-
-    public static Bitmap resizeBitmap(Bitmap bitmap, Bitmap ref) {
+    static Bitmap resizeBitmap(Bitmap bitmap, Bitmap ref) {
         int w = ref.getWidth();
         int h = ref.getHeight();
         return Bitmap.createScaledBitmap(bitmap, w, h, false);
     }
-
+/*
+    static void updateNowPlaying(AppCompatActivity a) {
+        View nowPlayingView = a.findViewById(R.id.nowplaying);
+        if (nowPlayingView == null) {
+            return;
+        }
+        MediaController controller = a.getMediaController();
+        if (controller != null) {
+            MediaMetadata metadata = controller.getMetadata();
+            if (metadata != null) {
+                TextView title = (TextView) nowPlayingView.findViewById(R.id.title);
+                TextView artist = (TextView) nowPlayingView.findViewById(R.id.artist);
+                title.setText(metadata.getString(MediaMetadata.METADATA_KEY_TITLE));
+                String artistName = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
+                if (MusicProvider.UNKOWN.equals(artistName)) {
+                    artistName = a.getString(R.string.unknown_artist_name);
+                }
+                artist.setText(artistName);
+                nowPlayingView.setVisibility(View.VISIBLE);
+                nowPlayingView.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Context c = v.getContext();
+                        c.startActivity(new Intent(c, MediaPlaybackActivity.class));
+                    }
+                });
+                return;
+            }
+        }
+        nowPlayingView.setVisibility(View.GONE);
+    }
+*/
 }

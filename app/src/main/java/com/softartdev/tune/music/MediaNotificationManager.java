@@ -79,7 +79,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         mNotificationColor = ResourceHelper.getThemeColor(mService, android.R.attr.colorPrimary, Color.DKGRAY);
 
-        mNotificationManager = (NotificationManagerCompat) mService.getSystemService(Context.NOTIFICATION_SERVICE);
+//        mNotificationManager = (NotificationManagerCompat) mService.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = NotificationManagerCompat.from(mService);
 
         String pkg = mService.getPackageName();
         mPauseIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,

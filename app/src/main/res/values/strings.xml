@@ -30,5 +30,6 @@
     <string name="play_pause">play or pause</string>
     <string name="play_item">Play item</string>
     <string name="musicbrowserlabel">Music</string>
+    <string name="error_loading_media">Error Loading Media</string>
 
 </resources>
