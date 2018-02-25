@@ -13,6 +13,7 @@ constructor(private val dataManager: DataManager) : BasePresenter<MainMediaView>
     fun mediaItems() {
         checkViewAttached()
         mvpView?.showProgress(true)
+/*
         dataManager.getMediaItems()
                 .subscribe({ mediaItems ->
                     mvpView?.showProgress(false)
@@ -22,6 +23,7 @@ constructor(private val dataManager: DataManager) : BasePresenter<MainMediaView>
                     mvpView?.showProgress(false)
                     mvpView?.showError(throwable)
                 }
+*/
     }
 
     fun play(mediaId: String) {

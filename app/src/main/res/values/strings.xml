@@ -21,4 +21,14 @@
     <string name="settings">Settings</string>
     <string name="dialog_action_cancel">Cancel</string>
 
+    <string name="random_queue_title">Random music</string>
+    <string name="browse_musics_by_genre_subtitle">%1$s songs</string>
+    <string name="no_search_results">No search results.</string>
+    <string name="error_no_metadata">Unable to retrieve metadata.</string>
+    <string name="skip_previous">Skip to previous</string>
+    <string name="skip_next">Skip to next</string>
+    <string name="play_pause">play or pause</string>
+    <string name="play_item">Play item</string>
+    <string name="musicbrowserlabel">Music</string>
+
 </resources>

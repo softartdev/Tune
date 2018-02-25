@@ -50,7 +50,6 @@ abstract class BaseActivity : AppCompatActivity() {
             configPersistentComponent = componentsArray.get(activityId)
         }
         activityComponent = configPersistentComponent.activityComponent(ActivityModule(this))
-        activityComponent?.inject(this)
     }
 
     abstract val layout: Int
