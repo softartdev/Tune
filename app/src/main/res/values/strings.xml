@@ -21,6 +21,9 @@
     <string name="settings">Settings</string>
     <string name="dialog_action_cancel">Cancel</string>
 
+    <string name="notification_channel">Tune_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for Tune</string>
+
     <string name="random_queue_title">Random music</string>
     <string name="browse_musics_by_genre_subtitle">%1$s songs</string>
     <string name="no_search_results">No search results.</string>

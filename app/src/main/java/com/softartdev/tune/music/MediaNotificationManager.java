@@ -17,6 +17,8 @@
 package com.softartdev.tune.music;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,8 +28,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.session.PlaybackState;
+import android.os.Build;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationManagerCompat;
+import android.support.annotation.RequiresApi;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -46,13 +49,14 @@ import timber.log.Timber;
  * won't be killed during playback.
  */
 public class MediaNotificationManager extends BroadcastReceiver {
+    private static final String CHANNEL_ID = "com.softartdev.tune.MUSIC_CHANNEL_ID";
     private static final int NOTIFICATION_ID = 412;
     private static final int REQUEST_CODE = 100;
 
-    public static final String ACTION_PAUSE = "com.android.music.pause";
-    public static final String ACTION_PLAY = "com.android.music.play";
-    public static final String ACTION_PREV = "com.android.music.prev";
-    public static final String ACTION_NEXT = "com.android.music.next";
+    public static final String ACTION_PAUSE = "com.softartdev.tune.pause";
+    public static final String ACTION_PLAY = "com.softartdev.tune.play";
+    public static final String ACTION_PREV = "com.softartdev.tune.prev";
+    public static final String ACTION_NEXT = "com.softartdev.tune.next";
 
     private final MediaPlaybackService mService;
     private MediaSessionCompat.Token mSessionToken;
@@ -62,7 +66,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private PlaybackStateCompat mPlaybackState;
     private MediaMetadataCompat mMetadata;
 
-    private NotificationManagerCompat mNotificationManager;
+    private NotificationManager mNotificationManager;
 
     private PendingIntent mPauseIntent;
     private PendingIntent mPlayIntent;
@@ -77,10 +81,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mService = service;
         updateSessionToken();
 
-        mNotificationColor = ResourceHelper.getThemeColor(mService, android.R.attr.colorPrimary, Color.DKGRAY);
+        int attrColor = R.color.colorPrimary;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            attrColor = android.R.attr.colorPrimary;
+        }
+        mNotificationColor = ResourceHelper.getThemeColor(mService, attrColor, Color.DKGRAY);
 
-//        mNotificationManager = (NotificationManagerCompat) mService.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager = NotificationManagerCompat.from(mService);
+        mNotificationManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
 
         String pkg = mService.getPackageName();
         mPauseIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
@@ -145,22 +152,24 @@ public class MediaNotificationManager extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-        Timber.d("Received intent with action %s", action);
-        switch (action) {
-            case ACTION_PAUSE:
-                mTransportControls.pause();
-                break;
-            case ACTION_PLAY:
-                mTransportControls.play();
-                break;
-            case ACTION_NEXT:
-                mTransportControls.skipToNext();
-                break;
-            case ACTION_PREV:
-                mTransportControls.skipToPrevious();
-                break;
-            default:
-                Timber.w("Unknown intent ignored. Action=%s", action);
+        if (action != null) {
+            Timber.d("Received intent with action %s", action);
+            switch (action) {
+                case ACTION_PAUSE:
+                    mTransportControls.pause();
+                    break;
+                case ACTION_PLAY:
+                    mTransportControls.play();
+                    break;
+                case ACTION_NEXT:
+                    mTransportControls.skipToNext();
+                    break;
+                case ACTION_PREV:
+                    mTransportControls.skipToPrevious();
+                    break;
+                default:
+                    Timber.w("Unknown intent ignored. Action=%s", action);
+            }
         }
     }
 
@@ -237,8 +246,12 @@ public class MediaNotificationManager extends BroadcastReceiver {
             return null;
         }
 
-        String channelId = "music_channel_id";
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, channelId);
+        // Notification channels are only supported on Android O+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
         int playPauseButtonPosition = 0;
 
         // If skip to previous action is enabled
@@ -337,7 +350,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
             @Override
             public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                if (mMetadata != null && mMetadata.getDescription() != null && artUrl.equals(mMetadata.getDescription().getIconUri().toString())) {
+                if (mMetadata != null && mMetadata.getDescription() != null && mMetadata.getDescription().getIconUri() != null && artUrl.equals(mMetadata.getDescription().getIconUri().toString())) {
                     // If the media is still the same, update the notification:
                     Timber.d("fetchBitmapFromURLAsync: set bitmap to %s", artUrl);
                     builder.setLargeIcon(bitmap);
@@ -345,5 +358,23 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 }
             }
         });
+    }
+
+    /**
+     * Creates Notification Channel. This is required in Android O+ to display notifications.
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        if (mNotificationManager.getNotificationChannel(CHANNEL_ID) == null) {
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(CHANNEL_ID,
+                            mService.getString(R.string.notification_channel),
+                            NotificationManager.IMPORTANCE_LOW);
+
+            notificationChannel.setDescription(
+                    mService.getString(R.string.notification_channel_description));
+
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 }
