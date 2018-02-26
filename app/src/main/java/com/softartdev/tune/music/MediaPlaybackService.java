@@ -286,12 +286,14 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             songExtra.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
             String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
             String artistName = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
-            MediaItem item = new MediaItem(new MediaDescriptionCompat.Builder()
-                                                   .setMediaId(hierarchyAwareMediaID)
-                                                   .setTitle(title)
-                                                   .setSubtitle(artistName)
-                                                   .setExtras(songExtra)
-                                                   .build(),
+            MediaItem item = new MediaItem(
+                    new MediaDescriptionCompat.Builder()
+                            .setMediaId(hierarchyAwareMediaID)
+                            .setTitle(title)
+                            .setSubtitle(artistName)
+                            .setIconBitmap(metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
+                            .setExtras(songExtra)
+                            .build(),
                     MediaItem.FLAG_PLAYABLE);
             mediaItems.add(item);
         }
