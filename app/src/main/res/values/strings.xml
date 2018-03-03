@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Tune</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -20,5 +20,27 @@
     <string name="retry">Retry</string>
     <string name="settings">Settings</string>
     <string name="dialog_action_cancel">Cancel</string>
+
+    <string name="notification_channel">Tune_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for Tune</string>
+
+    <string name="random_queue_title">Random music</string>
+    <string name="browse_musics_by_genre_subtitle">%1$s songs</string>
+    <string name="no_search_results">No search results.</string>
+    <string name="error_no_metadata">Unable to retrieve metadata.</string>
+    <string name="skip_previous">Skip to previous</string>
+    <string name="skip_next">Skip to next</string>
+    <string name="play_pause">play or pause</string>
+    <string name="play_item">Play item</string>
+    <string name="music">Music</string>
+    <string name="error_loading_media">Error Loading Media</string>
+    <string name="unknown_artist_name">Unknown artist</string>
+    <string name="repeat_off_notif">Repeat is off.</string>
+    <string name="repeat_current_notif">Repeating current song.</string>
+    <string name="repeat_all_notif">Repeating all songs.</string>
+    <string translatable="false" name="durationformatshort"><xliff:g id="format">%2$d:%5$02d</xliff:g></string>
+    <string translatable="false" name="durationformatlong"><xliff:g id="format">%1$d:%3$02d:%5$02d</xliff:g></string>
+    <string name="mediasearch">Search for <xliff:g id="term" example="Beethoven">%s</xliff:g> using:</string>
+    <string name="unknown_album_name">Unknown album</string>
 
 </resources>

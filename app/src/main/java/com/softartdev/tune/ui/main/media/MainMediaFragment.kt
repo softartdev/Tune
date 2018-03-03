@@ -74,4 +74,8 @@ class MainMediaFragment : BaseFragment(), MainMediaView, MainMediaAdapter.ClickL
         mainMediaPresenter.mediaItems()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mainMediaPresenter.detachView()
+    }
 }

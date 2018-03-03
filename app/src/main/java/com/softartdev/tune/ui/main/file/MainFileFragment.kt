@@ -159,6 +159,11 @@ class MainFileFragment : BaseFragment(), MainFileView, MainFileAdapter.ClickList
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mainFilePresenter.detachView()
+    }
+
     companion object {
         internal const val REQUEST_PERMISSION_EXTERNAL_STORAGE = 1004
     }

@@ -1,5 +1,8 @@
 package com.softartdev.tune.ui.main.media
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v7.widget.RecyclerView
@@ -7,15 +10,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.softartdev.tune.R
+import com.softartdev.tune.di.ApplicationContext
 import com.softartdev.tune.di.ConfigPersistent
 import kotlinx.android.synthetic.main.item_media.view.*
 import javax.inject.Inject
 
 @ConfigPersistent
 class MainMediaAdapter @Inject
-constructor() : RecyclerView.Adapter<MainMediaAdapter.MediaItemsViewHolder>() {
+constructor(@ApplicationContext val context: Context) : RecyclerView.Adapter<MainMediaAdapter.MediaItemsViewHolder>() {
     var mediaList: List<MediaBrowserCompat.MediaItem> = emptyList()
     var clickListener: ClickListener? = null
+    private val defaultAlbumArt: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.albumart_mp_unknown)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_media, parent, false)
@@ -42,7 +47,7 @@ constructor() : RecyclerView.Adapter<MainMediaAdapter.MediaItemsViewHolder>() {
 
         fun bind(mediaDescriptionCompat: MediaDescriptionCompat) {
             selectedMediaId = mediaDescriptionCompat.mediaId!!
-            itemView.item_media_icon_image_view.setImageBitmap(mediaDescriptionCompat.iconBitmap)
+            itemView.item_media_icon_image_view.setImageBitmap(mediaDescriptionCompat.iconBitmap ?: defaultAlbumArt)
             itemView.item_media_title_text_view.text = mediaDescriptionCompat.title
             itemView.item_media_subtitle_text_view.text = mediaDescriptionCompat.subtitle
         }
