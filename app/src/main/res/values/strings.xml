@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Tune</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -32,7 +32,15 @@
     <string name="skip_next">Skip to next</string>
     <string name="play_pause">play or pause</string>
     <string name="play_item">Play item</string>
-    <string name="musicbrowserlabel">Music</string>
+    <string name="music">Music</string>
     <string name="error_loading_media">Error Loading Media</string>
+    <string name="unknown_artist_name">Unknown artist</string>
+    <string name="repeat_off_notif">Repeat is off.</string>
+    <string name="repeat_current_notif">Repeating current song.</string>
+    <string name="repeat_all_notif">Repeating all songs.</string>
+    <string translatable="false" name="durationformatshort"><xliff:g id="format">%2$d:%5$02d</xliff:g></string>
+    <string translatable="false" name="durationformatlong"><xliff:g id="format">%1$d:%3$02d:%5$02d</xliff:g></string>
+    <string name="mediasearch">Search for <xliff:g id="term" example="Beethoven">%s</xliff:g> using:</string>
+    <string name="unknown_album_name">Unknown album</string>
 
 </resources>
