@@ -17,9 +17,18 @@
 package com.softartdev.tune.music;
 
 import android.graphics.Bitmap;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
+
+import com.softartdev.tune.R;
+
+import org.jetbrains.annotations.NotNull;
 
 /*
-Static methods useful for activities
+ * Static methods useful for activities
  */
 public class MusicUtils {
 
@@ -28,35 +37,37 @@ public class MusicUtils {
         int h = ref.getHeight();
         return Bitmap.createScaledBitmap(bitmap, w, h, false);
     }
-/*
-    static void updateNowPlaying(AppCompatActivity a) {
-        View nowPlayingView = a.findViewById(R.id.nowplaying);
+
+    public static void updateNowPlaying(@NotNull AppCompatActivity activity) {
+        View nowPlayingView = activity.findViewById(R.id.nowplaying);
         if (nowPlayingView == null) {
             return;
         }
-        MediaController controller = a.getMediaController();
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(activity);
         if (controller != null) {
-            MediaMetadata metadata = controller.getMetadata();
+            MediaMetadataCompat metadata = controller.getMetadata();
             if (metadata != null) {
-                TextView title = (TextView) nowPlayingView.findViewById(R.id.title);
-                TextView artist = (TextView) nowPlayingView.findViewById(R.id.artist);
-                title.setText(metadata.getString(MediaMetadata.METADATA_KEY_TITLE));
-                String artistName = metadata.getString(MediaMetadata.METADATA_KEY_ARTIST);
+                TextView title = nowPlayingView.findViewById(R.id.title);
+                TextView artist = nowPlayingView.findViewById(R.id.artist);
+                title.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+                String artistName = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
                 if (MusicProvider.UNKOWN.equals(artistName)) {
-                    artistName = a.getString(R.string.unknown_artist_name);
+                    artistName = activity.getString(R.string.unknown_artist_name);
                 }
                 artist.setText(artistName);
                 nowPlayingView.setVisibility(View.VISIBLE);
+/*
                 nowPlayingView.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         Context c = v.getContext();
                         c.startActivity(new Intent(c, MediaPlaybackActivity.class));
                     }
                 });
+*/
                 return;
             }
         }
         nowPlayingView.setVisibility(View.GONE);
     }
-*/
+
 }

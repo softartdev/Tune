@@ -1,7 +1,6 @@
 package com.softartdev.tune.ui.main.music
 
 import android.content.ComponentName
-import android.media.session.MediaController
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
@@ -13,6 +12,7 @@ import android.view.View
 import com.softartdev.tune.R
 import com.softartdev.tune.music.MediaIDHelper
 import com.softartdev.tune.music.MediaPlaybackService
+import com.softartdev.tune.music.MusicUtils
 import com.softartdev.tune.ui.base.BaseActivity
 import com.softartdev.tune.ui.common.ErrorView
 import com.softartdev.tune.ui.main.media.MainMediaAdapter
@@ -80,6 +80,7 @@ class MusicBrowserActivity(override val layout: Int = R.layout.activity_music_br
     private val mediaControllerCallback = object : MediaControllerCompat.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             super.onMetadataChanged(metadata)
+            MusicUtils.updateNowPlaying(this@MusicBrowserActivity)
             mainMediaAdapter.notifyDataSetChanged()
         }
     }
@@ -91,14 +92,11 @@ class MusicBrowserActivity(override val layout: Int = R.layout.activity_music_br
             mediaBrowserCompat?.subscribe(MediaIDHelper.MEDIA_ID_MUSICS_BY_SONG, subscriptionCallback)
             val mediaControllerCompat = MediaControllerCompat(this@MusicBrowserActivity, sessionToken)
             mediaControllerCompat.registerCallback(mediaControllerCallback)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mediaController = mediaControllerCompat.mediaController as MediaController?
-            }
-/*
+            MediaControllerCompat.setMediaController(this@MusicBrowserActivity, mediaControllerCompat)
+
             if (mediaControllerCompat.metadata != null) {
-                MusicUtils.updateNowPlaying(this@TrackBrowserActivity)
+                MusicUtils.updateNowPlaying(this@MusicBrowserActivity)
             }
-*/
         }
         override fun onConnectionFailed() {
             Timber.d("onConnectionFailed")
