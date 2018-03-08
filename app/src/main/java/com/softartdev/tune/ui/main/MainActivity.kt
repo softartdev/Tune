@@ -1,26 +1,38 @@
 package com.softartdev.tune.ui.main
 
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.softartdev.tune.R
+import com.softartdev.tune.music.MediaPlaybackService
+import com.softartdev.tune.music.MusicUtils
 import com.softartdev.tune.ui.main.file.MainFileFragment
 import com.softartdev.tune.ui.main.media.MainMediaFragment
 import com.softartdev.tune.ui.main.music.MusicBrowserActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private var mediaBrowserCompat: MediaBrowserCompat? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        val serviceComponent = ComponentName(this, MediaPlaybackService::class.java)
+        mediaBrowserCompat = MediaBrowserCompat(this, serviceComponent, connectionCallBack, null)
 
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -32,6 +44,43 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 it.isChecked = true
                 onNavigationItemSelected(it)
             }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mediaBrowserCompat?.connect()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mediaBrowserCompat?.disconnect()
+    }
+
+    private val mediaControllerCallback = object : MediaControllerCompat.Callback() {
+        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
+            MusicUtils.updateNowPlaying(this@MainActivity)
+        }
+    }
+
+    private val connectionCallBack = object : MediaBrowserCompat.ConnectionCallback() {
+        override fun onConnected() {
+            val sessionToken = mediaBrowserCompat?.sessionToken ?: throw IllegalArgumentException("No Session token")
+            Timber.d("onConnected: session token %s", sessionToken)
+            val mediaControllerCompat = MediaControllerCompat(this@MainActivity, sessionToken)
+            mediaControllerCompat.registerCallback(mediaControllerCallback)
+            MediaControllerCompat.setMediaController(this@MainActivity, mediaControllerCompat)
+
+            if (mediaControllerCompat.metadata != null) {
+                MusicUtils.updateNowPlaying(this@MainActivity)
+            }
+        }
+        override fun onConnectionFailed() {
+            Timber.d("onConnectionFailed")
+        }
+        override fun onConnectionSuspended() {
+            Timber.d("onConnectionSuspended")
+            MediaControllerCompat.setMediaController(this@MainActivity, null)
         }
     }
 

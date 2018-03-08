@@ -27,7 +27,7 @@ abstract class BaseFragment : Fragment() {
     private var fragmentId = 0L
 
     companion object {
-        private val KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID"
+        private const val KEY_FRAGMENT_ID = "KEY_FRAGMENT_ID"
         private val componentsArray = LongSparseArray<ConfigPersistentComponent>()
         private val NEXT_ID = AtomicLong(0)
     }
