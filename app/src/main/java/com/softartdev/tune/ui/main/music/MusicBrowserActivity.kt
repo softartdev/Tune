@@ -1,11 +1,11 @@
 package com.softartdev.tune.ui.main.music
 
 import android.content.ComponentName
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -53,7 +53,8 @@ class MusicBrowserActivity(override val layout: Int = R.layout.activity_music_br
             mainMediaPresenter.mediaItems()
         }
 */
-        mediaBrowserCompat = MediaBrowserCompat(this, ComponentName(this, MediaPlaybackService::class.java), connectionCallBack, null)
+        val serviceComponent = ComponentName(this, MediaPlaybackService::class.java)
+        mediaBrowserCompat = MediaBrowserCompat(this, serviceComponent, connectionCallBack, null)
     }
 
     override fun onStart() {
@@ -78,10 +79,18 @@ class MusicBrowserActivity(override val layout: Int = R.layout.activity_music_br
     }
 
     private val mediaControllerCallback = object : MediaControllerCompat.Callback() {
+        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+            state?.let {
+                mainMediaAdapter.playbackState = it.state
+                mainMediaAdapter.notifyDataSetChanged()
+            }
+        }
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            super.onMetadataChanged(metadata)
+            metadata?.let {
+                mainMediaAdapter.playbackMediaId = it.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                mainMediaAdapter.notifyDataSetChanged()
+            }
             MusicUtils.updateNowPlaying(this@MusicBrowserActivity)
-            mainMediaAdapter.notifyDataSetChanged()
         }
     }
 
@@ -103,9 +112,7 @@ class MusicBrowserActivity(override val layout: Int = R.layout.activity_music_br
         }
         override fun onConnectionSuspended() {
             Timber.d("onConnectionSuspended")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mediaController = null
-            }
+            MediaControllerCompat.setMediaController(this@MusicBrowserActivity, null)
         }
     }
 
@@ -117,11 +124,8 @@ class MusicBrowserActivity(override val layout: Int = R.layout.activity_music_br
     }
 
     override fun onMediaIdClick(mediaId: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mediaController.transportControls.playFromMediaId(mediaId, null)
-        } else {
-            mainMediaPresenter.play(mediaId)
-        }
+        mainMediaPresenter.play(mediaId)
+        MediaControllerCompat.getMediaController(this).transportControls.playFromMediaId(mediaId, null)
     }
     
     override fun showProgress(show: Boolean) {

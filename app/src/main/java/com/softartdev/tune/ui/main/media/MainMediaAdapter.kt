@@ -1,10 +1,15 @@
 package com.softartdev.tune.ui.main.media
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.AnimationDrawable
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +26,12 @@ constructor(@ApplicationContext val context: Context) : RecyclerView.Adapter<Mai
     var mediaList: List<MediaBrowserCompat.MediaItem> = emptyList()
     var clickListener: ClickListener? = null
     private val defaultAlbumArt: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.albumart_mp_unknown)
+    private val animation = ContextCompat.getDrawable(context, R.drawable.ic_equalizer_white_36dp) as AnimationDrawable
+    private val colorStatePlaying = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorAccent))
+    var playbackMediaId: String = "METADATA_KEY_MEDIA_ID"
+    var playbackState: Int = PlaybackStateCompat.STATE_NONE
+
+    init { DrawableCompat.setTintList(animation, colorStatePlaying) }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_media, parent, false)
@@ -47,10 +58,19 @@ constructor(@ApplicationContext val context: Context) : RecyclerView.Adapter<Mai
 
         fun bind(mediaDescriptionCompat: MediaDescriptionCompat) {
             selectedMediaId = mediaDescriptionCompat.mediaId!!
-            itemView.item_media_icon_image_view.setImageBitmap(mediaDescriptionCompat.iconBitmap ?: defaultAlbumArt)
+
             itemView.item_media_title_text_view.text = mediaDescriptionCompat.title
             itemView.item_media_subtitle_text_view.text = mediaDescriptionCompat.subtitle
-        }
 
+            if (selectedMediaId.endsWith(playbackMediaId)) {
+                itemView.item_media_icon_image_view.setImageDrawable(animation)
+                animation.start()
+                when (playbackState) {
+                    PlaybackStateCompat.STATE_PAUSED -> animation.stop()
+                }
+            } else {
+                itemView.item_media_icon_image_view.setImageBitmap(mediaDescriptionCompat.iconBitmap ?: defaultAlbumArt)
+            }
+        }
     }
 }
