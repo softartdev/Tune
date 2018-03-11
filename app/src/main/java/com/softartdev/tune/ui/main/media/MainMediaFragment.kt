@@ -14,6 +14,10 @@ import com.softartdev.tune.music.MediaIDHelper
 import com.softartdev.tune.music.MediaPlaybackService
 import com.softartdev.tune.ui.base.BaseFragment
 import com.softartdev.tune.ui.common.ErrorView
+import com.softartdev.tune.ui.main.MainActivity.Companion.ALBUMS_TAG
+import com.softartdev.tune.ui.main.MainActivity.Companion.ARTISTS_TAG
+import com.softartdev.tune.ui.main.MainActivity.Companion.PLAYLISTS_TAG
+import com.softartdev.tune.ui.main.MainActivity.Companion.TRACKS_TAG
 import kotlinx.android.synthetic.main.fragment_media_main.*
 import kotlinx.android.synthetic.main.view_error.view.*
 import timber.log.Timber
@@ -71,7 +75,14 @@ class MainMediaFragment : BaseFragment(), MainMediaView, MainMediaAdapter.ClickL
     private val connectionCallBack = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
             Timber.d("onConnected")
-            mediaBrowserCompat?.subscribe(MediaIDHelper.MEDIA_ID_MUSICS_BY_SONG, subscriptionCallback)
+            val parentId = when (tag) {
+                TRACKS_TAG -> MediaIDHelper.MEDIA_ID_MUSICS_BY_SONG
+                PLAYLISTS_TAG -> MediaIDHelper.MEDIA_ID_MUSICS_BY_PLAYLIST
+                ARTISTS_TAG -> MediaIDHelper.MEDIA_ID_MUSICS_BY_ARTIST
+                ALBUMS_TAG -> MediaIDHelper.MEDIA_ID_MUSICS_BY_ALBUM
+                else -> MediaIDHelper.MEDIA_ID_ROOT
+            }
+            mediaBrowserCompat?.subscribe(parentId, subscriptionCallback)
             activity?.let { MediaControllerCompat.getMediaController(it).registerCallback(mediaControllerCallback) }
         }
         override fun onConnectionSuspended() {

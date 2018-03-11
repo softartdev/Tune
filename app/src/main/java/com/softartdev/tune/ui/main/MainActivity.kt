@@ -98,6 +98,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_podcasts -> showSelectedFragment(PODCASTS_TAG)
             R.id.nav_downloads -> showSelectedFragment(DOWNLOADS_TAG)
             R.id.nav_tracks -> showSelectedFragment(TRACKS_TAG)
+            R.id.nav_playlists -> showSelectedFragment(PLAYLISTS_TAG)
+            R.id.nav_artists -> showSelectedFragment(ARTISTS_TAG)
+            R.id.nav_albums -> showSelectedFragment(ALBUMS_TAG)
         }
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
@@ -110,10 +113,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             supportFragmentManager.beginTransaction().show(selectedFragment).commit()
         } else {
             //if the fragment does not exist, add it to fragment manager.
-            selectedFragment = if (tag == TRACKS_TAG) {
-                MainMediaFragment()
-            } else {
-                MainFileFragment()
+            selectedFragment = when (tag) {
+                SOUNDS_TAG, PODCASTS_TAG, DOWNLOADS_TAG -> MainFileFragment()
+                else -> MainMediaFragment()
             }
             supportFragmentManager.beginTransaction().add(R.id.main_frame_layout, selectedFragment, tag).commit()
         }
@@ -152,6 +154,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         const val PODCASTS_TAG = "podcasts_tag"
         const val DOWNLOADS_TAG = "downloads_tag"
         const val TRACKS_TAG = "tracks_tag"
-        private val TAGS = arrayOf(SOUNDS_TAG, PODCASTS_TAG, DOWNLOADS_TAG, TRACKS_TAG)
+        const val PLAYLISTS_TAG = "playlists_tag"
+        const val ARTISTS_TAG = "artists_tag"
+        const val ALBUMS_TAG = "albums_tag"
+        private val TAGS = arrayOf(SOUNDS_TAG, PODCASTS_TAG, DOWNLOADS_TAG, TRACKS_TAG, PLAYLISTS_TAG, ARTISTS_TAG, ALBUMS_TAG)
     }
 }
