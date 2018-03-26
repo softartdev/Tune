@@ -676,7 +676,7 @@ public class MediaPlaybackActivity extends AppCompatActivity implements View.OnT
         long duration = mediaController.getMetadata().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         long pos = mediaController.getPlaybackState().getPosition();
         if ((pos >= 0) && (duration > 0)) {
-            mCurrentTime.setText(MusicUtils.makeTimeString(this, pos / 1000));
+            mCurrentTime.setText(MusicUtils.INSTANCE.makeTimeString(this, pos / 1000));
             int progress = (int) (1000 * pos / duration);
             mProgress.setProgress(progress);
 
@@ -739,6 +739,6 @@ public class MediaPlaybackActivity extends AppCompatActivity implements View.OnT
         mAlbumArt.setVisibility(View.VISIBLE);
 
         long duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-        mTotalTime.setText(MusicUtils.makeTimeString(this, duration / 1000));
+        mTotalTime.setText(MusicUtils.INSTANCE.makeTimeString(this, duration / 1000));
     }
 }

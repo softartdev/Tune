@@ -34,7 +34,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
 import com.softartdev.tune.R;
-import com.softartdev.tune.ui.main.music.MusicBrowserActivity;
+import com.softartdev.tune.ui.main.MainActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
         mPlayback.start();
 
         Context context = getApplicationContext();
-        Intent intent = new Intent(context, MusicBrowserActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, 99 /*request code*/, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         mSession.setSessionActivity(pi);
 

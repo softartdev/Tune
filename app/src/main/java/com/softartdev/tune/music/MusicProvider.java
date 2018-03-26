@@ -394,7 +394,7 @@ public class MusicProvider {
         Bitmap bitmap;
         if (albumArtData != null) {
             bitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
-            bitmap = MusicUtils.resizeBitmap(bitmap, getDefaultAlbumArt());
+            bitmap = MusicUtils.INSTANCE.resizeBitmap(bitmap, getDefaultAlbumArt());
             metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap);
         }
         retriever.release();

@@ -1,7 +1,6 @@
 package com.softartdev.tune.ui.main
 
 import android.content.ComponentName
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.media.MediaBrowserCompat
@@ -10,14 +9,12 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
 import android.view.MenuItem
 import com.softartdev.tune.R
 import com.softartdev.tune.music.MediaPlaybackService
 import com.softartdev.tune.music.MusicUtils
 import com.softartdev.tune.ui.main.file.MainFileFragment
 import com.softartdev.tune.ui.main.media.MainMediaFragment
-import com.softartdev.tune.ui.main.music.MusicBrowserActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import timber.log.Timber
@@ -129,25 +126,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .forEach { hideUnselectedFragment(it) }
     }
 
-    private fun hideUnselectedFragment(tag: String) {
-        val unselectedFragment = supportFragmentManager.findFragmentByTag(tag)
-        if (unselectedFragment != null) {
-            supportFragmentManager.beginTransaction().hide(unselectedFragment).commit()
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_music -> {
-            startActivity(Intent(this, MusicBrowserActivity::class.java))
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
-    }
+    private fun hideUnselectedFragment(tag: String) =
+            with(supportFragmentManager) { findFragmentByTag(tag)?.let { beginTransaction().hide(it).commit() } }
 
     companion object {
         const val SOUNDS_TAG = "sounds_tag"
