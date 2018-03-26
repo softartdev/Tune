@@ -83,7 +83,7 @@ class MainMediaFragment : BaseFragment(), MainMediaView, MainMediaAdapter.ClickL
                 else -> MediaIDHelper.MEDIA_ID_ROOT
             }
             mediaBrowserCompat?.subscribe(parentId, subscriptionCallback)
-            activity?.let { MediaControllerCompat.getMediaController(it).registerCallback(mediaControllerCallback) }
+            activity?.let { MediaControllerCompat.getMediaController(it)?.registerCallback(mediaControllerCallback) }
         }
         override fun onConnectionSuspended() {
             Timber.d("onConnectionFailed")

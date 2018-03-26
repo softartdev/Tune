@@ -64,7 +64,7 @@ abstract class BaseFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        if (!activity!!.isChangingConfigurations) {
+        if (activity?.isChangingConfigurations == false) {
             Timber.i("Clearing ConfigPersistentComponent id=%d", fragmentId)
             componentsArray.remove(fragmentId)
         }

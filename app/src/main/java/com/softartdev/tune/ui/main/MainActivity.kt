@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
         if (savedInstanceState == null) {
-            nav_view.menu.getItem(0).let {
+            nav_view.menu.getItem(3).let {
                 it.isChecked = true
                 onNavigationItemSelected(it)
             }

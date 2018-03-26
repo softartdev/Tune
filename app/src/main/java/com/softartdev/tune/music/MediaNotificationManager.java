@@ -26,15 +26,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.RemoteException;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -73,19 +73,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private PendingIntent mPreviousIntent;
     private PendingIntent mNextIntent;
 
-    private int mNotificationColor;
-
     private boolean mStarted = false;
 
     public MediaNotificationManager(MediaPlaybackService service) {
         mService = service;
         updateSessionToken();
-
-        int attrColor = R.color.colorPrimary;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            attrColor = android.R.attr.colorPrimary;
-        }
-        mNotificationColor = ResourceHelper.getThemeColor(mService, attrColor, Color.DKGRAY);
 
         mNotificationManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -289,7 +281,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
                                   .setShowActionsInCompactView(playPauseButtonPosition) // show only play/pause in compact view
                                   .setMediaSession(mSessionToken))
-                .setColor(mNotificationColor)
+                .setColor(ContextCompat.getColor(mService, R.color.colorPrimary))
                 .setSmallIcon(R.drawable.ic_notification)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setUsesChronometer(true)
