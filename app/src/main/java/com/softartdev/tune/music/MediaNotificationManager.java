@@ -29,6 +29,7 @@ import android.graphics.BitmapFactory;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -269,7 +270,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // it can actually be any valid Android Uri formatted String.
             // async fetch the album art icon
             String artUrl = description.getIconUri().toString();
-            art = AlbumArtCache.getInstance().getBigImage(artUrl);
+            art = AlbumArtCache.INSTANCE.getBigImage(artUrl);
             if (art == null) {
                 fetchArtUrl = artUrl;
                 // use a placeholder art while the remote art is being downloaded
@@ -339,9 +340,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private void fetchBitmapFromURLAsync(final String bitmapUrl, final NotificationCompat.Builder builder) {
-        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+        AlbumArtCache.INSTANCE.fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
             @Override
-            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
+            public void onFetched(@NonNull String artUrl, @NonNull Bitmap bitmap, @NonNull Bitmap icon) {
                 if (mMetadata != null && mMetadata.getDescription() != null && mMetadata.getDescription().getIconUri() != null && artUrl.equals(mMetadata.getDescription().getIconUri().toString())) {
                     // If the media is still the same, update the notification:
                     Timber.d("fetchBitmapFromURLAsync: set bitmap to %s", artUrl);

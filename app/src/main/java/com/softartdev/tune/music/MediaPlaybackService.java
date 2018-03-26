@@ -540,9 +540,9 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
         // locked screen and in other places.
         if (track.getDescription().getIconBitmap() == null && track.getDescription().getIconUri() != null) {
             String albumUri = track.getDescription().getIconUri().toString();
-            AlbumArtCache.getInstance().fetch(albumUri, new AlbumArtCache.FetchListener() {
+            AlbumArtCache.INSTANCE.fetch(albumUri, new AlbumArtCache.FetchListener() {
                 @Override
-                public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
+                public void onFetched(@NonNull String artUrl, @NonNull Bitmap bitmap, @NonNull Bitmap icon) {
                     MediaSessionCompat.QueueItem queueItem = mPlayingQueue.get(mCurrentIndexOnQueue);
                     MediaMetadataCompat track = mMusicProvider.getMusicByMediaId(trackId).getMetadata();
                     track = new MediaMetadataCompat
