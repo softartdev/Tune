@@ -167,15 +167,12 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             // Use result.detach to allow calling result.sendResult from another thread:
             result.detach();
 
-            mMusicProvider.retrieveMediaAsync(new MusicProvider.MusicProviderCallback() {
-                @Override
-                public void onMusicCatalogReady(boolean success) {
-                    Timber.d("Received catalog result, success:  %s", String.valueOf(success));
-                    if (success) {
-                        onLoadChildren(parentMediaId, result);
-                    } else {
-                        result.sendResult(Collections.<MediaItem>emptyList());
-                    }
+            mMusicProvider.retrieveMediaAsync(success -> {
+                Timber.d("Received catalog result, success:  %s", String.valueOf(success));
+                if (success) {
+                    onLoadChildren(parentMediaId, result);
+                } else {
+                    result.sendResult(Collections.emptyList());
                 }
             });
 
@@ -212,7 +209,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
                     for (String artist : mMusicProvider.getArtists()) {
                         MediaItem item = new MediaItem(
                                 new MediaDescriptionCompat.Builder()
-                                        .setMediaId(MediaIDHelper.createBrowseCategoryMediaID(
+                                        .setMediaId(MediaIDHelper.INSTANCE.createBrowseCategoryMediaID(
                                                 MEDIA_ID_MUSICS_BY_ARTIST, artist))
                                         .setTitle(artist)
                                         .build(),
@@ -225,7 +222,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
                     for (String playlist : mMusicProvider.getPlaylists()) {
                         MediaItem item = new MediaItem(
                                 new MediaDescriptionCompat.Builder()
-                                        .setMediaId(MediaIDHelper.createBrowseCategoryMediaID(
+                                        .setMediaId(MediaIDHelper.INSTANCE.createBrowseCategoryMediaID(
                                                 MEDIA_ID_MUSICS_BY_PLAYLIST, playlist))
                                         .setTitle(playlist)
                                         .build(),
@@ -239,21 +236,21 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
                     break;
                 case MEDIA_ID_MUSICS_BY_SONG:
                     Timber.d("OnLoadChildren.SONG");
-                    String hierarchyAwareMediaID = MediaIDHelper.createBrowseCategoryMediaID(
+                    String hierarchyAwareMediaID = MediaIDHelper.INSTANCE.createBrowseCategoryMediaID(
                             parentMediaId, MEDIA_ID_MUSICS_BY_SONG);
                     loadSong(mMusicProvider.getMusicList(), mediaItems, hierarchyAwareMediaID);
                     break;
                 default:
                     if (parentMediaId.startsWith(MEDIA_ID_MUSICS_BY_ARTIST)) {
-                        String artist = MediaIDHelper.getHierarchy(parentMediaId)[1];
+                        String artist = MediaIDHelper.INSTANCE.getHierarchy(parentMediaId)[1];
                         Timber.d("OnLoadChildren.SONGS_BY_ARTIST  artist=%s", artist);
                         loadAlbum(mMusicProvider.getAlbumByArtist(artist), mediaItems);
                     } else if (parentMediaId.startsWith(MEDIA_ID_MUSICS_BY_ALBUM)) {
-                        String album = MediaIDHelper.getHierarchy(parentMediaId)[1];
+                        String album = MediaIDHelper.INSTANCE.getHierarchy(parentMediaId)[1];
                         Timber.d("OnLoadChildren.SONGS_BY_ALBUM  album=%s", album);
                         loadSong(mMusicProvider.getMusicsByAlbum(album), mediaItems, parentMediaId);
                     } else if (parentMediaId.startsWith(MEDIA_ID_MUSICS_BY_PLAYLIST)) {
-                        String playlist = MediaIDHelper.getHierarchy(parentMediaId)[1];
+                        String playlist = MediaIDHelper.INSTANCE.getHierarchy(parentMediaId)[1];
                         Timber.d("OnLoadChildren.SONGS_BY_PLAYLIST playlist=%s", playlist);
                         if (playlist.equals(MEDIA_ID_NOW_PLAYING) && mPlayingQueue != null
                                 && mPlayingQueue.size() > 0) {
@@ -281,7 +278,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
 
     private void loadSong(Iterable<MediaMetadataCompat> songList, List<MediaItem> mediaItems, String parentId) {
         for (MediaMetadataCompat metadata : songList) {
-            String hierarchyAwareMediaID = MediaIDHelper.createMediaID(metadata.getDescription().getMediaId(), parentId);
+            String hierarchyAwareMediaID = MediaIDHelper.INSTANCE.createMediaID(metadata.getDescription().getMediaId(), parentId);
             Bundle songExtra = new Bundle();
             songExtra.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
             String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
@@ -307,7 +304,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             albumExtra.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, albumMetadata.getLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS));
             MediaItem item = new MediaItem(
                     new MediaDescriptionCompat.Builder()
-                            .setMediaId(MediaIDHelper.createBrowseCategoryMediaID(MEDIA_ID_MUSICS_BY_ALBUM, albumName))
+                            .setMediaId(MediaIDHelper.INSTANCE.createBrowseCategoryMediaID(MEDIA_ID_MUSICS_BY_ALBUM, albumName))
                             .setTitle(albumName)
                             .setSubtitle(artistName)
                             .setIconBitmap(albumMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
@@ -361,7 +358,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             // selected from.
             mPlayingQueue = QueueHelper.INSTANCE.getPlayingQueue(mediaId, mMusicProvider);
             mSession.setQueue(mPlayingQueue);
-            String queueTitle = getString(R.string.browse_musics_by_genre_subtitle, MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId));
+            String queueTitle = getString(R.string.browse_musics_by_genre_subtitle, MediaIDHelper.INSTANCE.extractBrowseCategoryValueFromMediaID(mediaId));
             mSession.setQueueTitle(queueTitle);
             if (mPlayingQueue != null && !mPlayingQueue.isEmpty()) {
                 // set the current index on queue from the media Id:
@@ -525,7 +522,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             return;
         }
         MediaSessionCompat.QueueItem queueItem = mPlayingQueue.get(mCurrentIndexOnQueue);
-        String musicId = MediaIDHelper.extractMusicIDFromMediaID(queueItem.getDescription().getMediaId());
+        String musicId = MediaIDHelper.INSTANCE.extractMusicIDFromMediaID(queueItem.getDescription().getMediaId());
         MediaMetadataCompat track = mMusicProvider.getMusicByMediaId(musicId).getMetadata();
         final String trackId = track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
         if (!musicId.equals(trackId)) {
@@ -561,7 +558,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
                                     .build();
                     mMusicProvider.updateMusic(trackId, track);
                     // If we are still playing the same music
-                    String currentPlayingId = MediaIDHelper.extractMusicIDFromMediaID(queueItem.getDescription().getMediaId());
+                    String currentPlayingId = MediaIDHelper.INSTANCE.extractMusicIDFromMediaID(queueItem.getDescription().getMediaId());
                     if (trackId.equals(currentPlayingId)) {
                         mSession.setMetadata(track);
                     }
@@ -632,7 +629,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             if (item != null) {
                 Timber.d("getCurrentPlayingMusic for musicId=%s", item.getDescription().getMediaId());
                 return mMusicProvider
-                        .getMusicByMediaId(MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId()))
+                        .getMusicByMediaId(MediaIDHelper.INSTANCE.extractMusicIDFromMediaID(item.getDescription().getMediaId()))
                         .getMetadata();
             }
         }

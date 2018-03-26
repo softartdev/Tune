@@ -153,7 +153,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener, OnComp
             relaxResources(false); // release everything except MediaPlayer
             MediaMetadataCompat track =
                     mMusicProvider
-                            .getMusicByMediaId(MediaIDHelper.extractMusicIDFromMediaID(
+                            .getMusicByMediaId(MediaIDHelper.INSTANCE.extractMusicIDFromMediaID(
                                     item.getDescription().getMediaId()))
                             .getMetadata();
 

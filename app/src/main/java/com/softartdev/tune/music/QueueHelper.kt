@@ -20,7 +20,10 @@ import android.os.Bundle
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
-import com.softartdev.tune.music.MediaIDHelper.*
+import com.softartdev.tune.music.MediaIDHelper.MEDIA_ID_MUSICS_BY_ALBUM
+import com.softartdev.tune.music.MediaIDHelper.MEDIA_ID_MUSICS_BY_ARTIST
+import com.softartdev.tune.music.MediaIDHelper.MEDIA_ID_MUSICS_BY_SEARCH
+import com.softartdev.tune.music.MediaIDHelper.MEDIA_ID_MUSICS_BY_SONG
 import timber.log.Timber
 import java.util.*
 
