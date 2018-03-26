@@ -323,7 +323,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
         public void onPlay() {
             Timber.d("play");
             if (mPlayingQueue == null || mPlayingQueue.isEmpty()) {
-                mPlayingQueue = QueueHelper.getRandomQueue(mMusicProvider);
+                mPlayingQueue = QueueHelper.INSTANCE.getRandomQueue(mMusicProvider);
                 mSession.setQueue(mPlayingQueue);
                 mSession.setQueueTitle(getString(R.string.random_queue_title));
                 // start playing from the beginning of the queue
@@ -339,7 +339,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             Timber.d("OnSkipToQueueItem:%s", queueId);
             if (mPlayingQueue != null && !mPlayingQueue.isEmpty()) {
                 // set the current index on queue from the music Id:
-                mCurrentIndexOnQueue = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, queueId);
+                mCurrentIndexOnQueue = QueueHelper.INSTANCE.getMusicIndexOnQueue(mPlayingQueue, queueId);
                 // play the music
                 handlePlayRequest();
             }
@@ -359,13 +359,13 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             // the hierarchy in MediaBrowser and the actual unique musicID. This is necessary
             // so we can build the correct playing queue, based on where the track was
             // selected from.
-            mPlayingQueue = QueueHelper.getPlayingQueue(mediaId, mMusicProvider);
+            mPlayingQueue = QueueHelper.INSTANCE.getPlayingQueue(mediaId, mMusicProvider);
             mSession.setQueue(mPlayingQueue);
             String queueTitle = getString(R.string.browse_musics_by_genre_subtitle, MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId));
             mSession.setQueueTitle(queueTitle);
             if (mPlayingQueue != null && !mPlayingQueue.isEmpty()) {
                 // set the current index on queue from the media Id:
-                mCurrentIndexOnQueue = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, mediaId);
+                mCurrentIndexOnQueue = QueueHelper.INSTANCE.getMusicIndexOnQueue(mPlayingQueue, mediaId);
                 if (mCurrentIndexOnQueue < 0) {
                     Timber.e("playFromMediaId: media ID %s could not be found on queue. Ignoring.", mediaId);
                 } else {
@@ -396,7 +396,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
                 // first song.
                 mCurrentIndexOnQueue = 0;
             }
-            if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+            if (QueueHelper.INSTANCE.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
                 handlePlayRequest();
             } else {
                 Timber.e("skipToNext: cannot skip to next. next Index=" + mCurrentIndexOnQueue
@@ -415,7 +415,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
                 // first song.
                 mCurrentIndexOnQueue = 0;
             }
-            if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+            if (QueueHelper.INSTANCE.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
                 handlePlayRequest();
             } else {
                 Timber.e("skipToPrevious: cannot skip to previous. previous Index="
@@ -432,9 +432,9 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
                 // A generic search like "Play music" sends an empty query
                 // and it's expected that we start playing something. What will be played depends
                 // on the app: favorite playlist, "I'm feeling lucky", most recent, etc.
-                mPlayingQueue = QueueHelper.getRandomQueue(mMusicProvider);
+                mPlayingQueue = QueueHelper.INSTANCE.getRandomQueue(mMusicProvider);
             } else {
-                mPlayingQueue = QueueHelper.getPlayingQueueFromSearch(query, mMusicProvider);
+                mPlayingQueue = QueueHelper.INSTANCE.getPlayingQueueFromSearch(query, mMusicProvider);
             }
             Timber.d("playFromSearch  playqueue.length=%s", mPlayingQueue.size());
             mSession.setQueue(mPlayingQueue);
@@ -484,7 +484,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
             mSession.setActive(true);
         }
 
-        if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+        if (QueueHelper.INSTANCE.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
             updateMetadata();
             mPlayback.play(mPlayingQueue.get(mCurrentIndexOnQueue));
         }
@@ -519,7 +519,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
     }
 
     private void updateMetadata() {
-        if (!QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+        if (!QueueHelper.INSTANCE.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
             Timber.e("Can't retrieve current metadata.");
             updatePlaybackStateCompat(getResources().getString(R.string.error_no_metadata));
             return;
@@ -597,7 +597,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
 
         // Set the activeQueueItemId if the current index is valid.
-        if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+        if (QueueHelper.INSTANCE.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
             MediaSessionCompat.QueueItem item = mPlayingQueue.get(mCurrentIndexOnQueue);
             stateBuilder.setActiveQueueItemId(item.getQueueId());
         }
@@ -627,7 +627,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat implements P
     }
 
     private MediaMetadataCompat getCurrentPlayingMusic() {
-        if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+        if (QueueHelper.INSTANCE.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
             MediaSessionCompat.QueueItem item = mPlayingQueue.get(mCurrentIndexOnQueue);
             if (item != null) {
                 Timber.d("getCurrentPlayingMusic for musicId=%s", item.getDescription().getMediaId());
