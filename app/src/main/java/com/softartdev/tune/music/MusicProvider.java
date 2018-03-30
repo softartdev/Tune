@@ -16,6 +16,7 @@
 
 package com.softartdev.tune.music;
 
+import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -404,7 +405,7 @@ public class MusicProvider {
     private Bitmap getDefaultAlbumArt() {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        @RawRes int artRes = R.drawable.albumart_mp_unknown;
+        @SuppressLint("ResourceType") @RawRes int artRes = R.drawable.albumart_mp_unknown;
         return BitmapFactory.decodeStream(
                 mContext.getResources().openRawResource(artRes), null, opts);
     }

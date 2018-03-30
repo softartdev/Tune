@@ -24,7 +24,7 @@ import android.support.v4.media.MediaMetadataCompat
  * Holder class that encapsulates a MediaMetadataCompat and allows the actual metadata to be modified
  * without requiring to rebuild the collections the metadata is in.
  */
-class Song(private val songId: Long, var metadata: MediaMetadataCompat?, var sortKey: Long?) : Parcelable {
+class Song(private val songId: Long, var metadata: MediaMetadataCompat, var sortKey: Long?) : Parcelable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
