@@ -140,10 +140,10 @@ class Playback(private val mService: MediaPlaybackService, private val mMusicPro
             state = PlaybackState.STATE_STOPPED
             relaxResources(false) // release everything except MediaPlayer
             val track = mMusicProvider
-                    .getMusicByMediaId(MediaIDHelper.extractMusicIDFromMediaID(item.description.mediaId!!))!!
-                    .metadata
+                    .getMusicByMediaId(MediaIDHelper.extractMusicIDFromMediaID(item.description.mediaId))
+                    ?.metadata
 
-            val source = track.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE)
+            val source = track?.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE)
 
             try {
                 mMediaPlayer.reset()

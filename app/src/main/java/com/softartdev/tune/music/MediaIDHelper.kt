@@ -64,10 +64,10 @@ object MediaIDHelper {
      * @param mediaID that contains the musicID
      * @return musicID
      */
-    fun extractMusicIDFromMediaID(mediaID: String): String? {
-        val pos = mediaID.indexOf(LEAF_SEPARATOR)
+    fun extractMusicIDFromMediaID(mediaID: String?): String? {
+        val pos = mediaID?.indexOf(LEAF_SEPARATOR) ?: -1
         return if (pos >= 0) {
-            mediaID.substring(pos + 1)
+            mediaID?.substring(pos + 1)
         } else null
     }
 

@@ -721,12 +721,12 @@ public class MediaPlaybackActivity extends AppCompatActivity implements View.OnT
         mTrackName.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
         Timber.d("Track Name: %s", mTrackName.getText());
         String artistName = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
-        if (artistName.equals(MusicProvider.UNKOWN)) {
+        if (artistName.equals(MusicProvider.UNKNOWN)) {
             artistName = getString(R.string.unknown_artist_name);
         }
         mArtistName.setText(artistName);
         String albumName = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
-        if (albumName.equals(MusicProvider.UNKOWN)) {
+        if (albumName.equals(MusicProvider.UNKNOWN)) {
             albumName = getString(R.string.unknown_album_name);
         }
         mAlbumName.setText(albumName);

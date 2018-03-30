@@ -70,7 +70,7 @@ object MusicUtils {
             activity.nowplaying.title.text = it.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
 
             with(it.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)) {
-                activity.nowplaying.artist.text = if (MusicProvider.UNKOWN == this) activity.getString(R.string.unknown_artist_name) else this
+                activity.nowplaying.artist.text = if (MusicProvider.UNKNOWN == this) activity.getString(R.string.unknown_artist_name) else this
             }
 
             activity.nowplaying.visibility = View.VISIBLE
