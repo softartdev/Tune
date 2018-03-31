@@ -22,24 +22,19 @@ import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.MediaPlayer.*
 import android.media.session.PlaybackState
 import android.net.wifi.WifiManager
 import android.os.PowerManager
 import android.support.v4.media.session.MediaSessionCompat.QueueItem
 import android.text.TextUtils
 import android.util.Log
-
 import java.io.IOException
-
-import android.media.MediaPlayer.OnCompletionListener
-import android.media.MediaPlayer.OnErrorListener
-import android.media.MediaPlayer.OnPreparedListener
-import android.media.MediaPlayer.OnSeekCompleteListener
 
 /**
  * A class that implements local media playback using [android.media.MediaPlayer]
  */
-class Playback(private val mService: MediaPlaybackService, private val mMusicProvider: MusicProvider) : AudioManager.OnAudioFocusChangeListener, OnCompletionListener, OnErrorListener, OnPreparedListener, OnSeekCompleteListener {
+class Playback(private val mService: MediaPlaybackService, private val mMusicProvider: MusicProvider?) : AudioManager.OnAudioFocusChangeListener, OnCompletionListener, OnErrorListener, OnPreparedListener, OnSeekCompleteListener {
     private val mAudioManager: AudioManager = mService.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     // Create the Wifi lock (this does not acquire the lock, this just creates it)
     private val mWifiLock: WifiManager.WifiLock = (mService.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)
@@ -67,7 +62,7 @@ class Playback(private val mService: MediaPlaybackService, private val mMusicPro
 
     // Type of audio focus we have:
     private var mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK
-    
+
     private val mMediaPlayer: MediaPlayer by lazy {
         Log.d(TAG, "create MediaPlayer")
         MediaPlayer().apply {
@@ -99,15 +94,16 @@ class Playback(private val mService: MediaPlaybackService, private val mMusicPro
         }
     }
 
-    val isConnected = true
-
     val isPlaying: Boolean
         get() = mPlayOnFocusGain || mMediaPlayer.isPlaying
 
-    val currentStreamPosition: Int
-        get() = mMediaPlayer.currentPosition
-
-    fun start() {}
+    val currentStreamPosition: Long?
+        get() = try {
+            mMediaPlayer.currentPosition.toLong()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
 
     fun stop(notifyListeners: Boolean) {
         state = PlaybackState.STATE_STOPPED
@@ -139,12 +135,8 @@ class Playback(private val mService: MediaPlaybackService, private val mMusicPro
         } else {
             state = PlaybackState.STATE_STOPPED
             relaxResources(false) // release everything except MediaPlayer
-            val track = mMusicProvider
-                    .getMusicByMediaId(MediaIDHelper.extractMusicIDFromMediaID(item.description.mediaId))
-                    ?.metadata
-
+            val track = mMusicProvider?.getMusicByMediaId(MediaIDHelper.extractMusicIDFromMediaID(item.description.mediaId))?.metadata
             val source = track?.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE)
-
             try {
                 mMediaPlayer.reset()
 

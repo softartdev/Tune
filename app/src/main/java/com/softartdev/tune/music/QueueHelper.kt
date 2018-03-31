@@ -32,7 +32,7 @@ import java.util.*
  */
 object QueueHelper {
 
-    fun getPlayingQueue(mediaId: String, musicProvider: MusicProvider): List<MediaSessionCompat.QueueItem>? {
+    fun getPlayingQueue(mediaId: String, musicProvider: MusicProvider?): List<MediaSessionCompat.QueueItem>? {
         // extract the browsing hierarchy from the media ID:
         val hierarchy = MediaIDHelper.getHierarchy(mediaId)
 
@@ -46,8 +46,8 @@ object QueueHelper {
 
         // This sample only supports genre and by_search category types.
         val tracks: Iterable<MediaMetadataCompat>? = when (categoryType) {
-            MEDIA_ID_MUSICS_BY_SONG -> musicProvider.musicList
-            MEDIA_ID_MUSICS_BY_ALBUM -> musicProvider.getMusicsByAlbum(categoryValue)
+            MEDIA_ID_MUSICS_BY_SONG -> musicProvider?.musicList
+            MEDIA_ID_MUSICS_BY_ALBUM -> musicProvider?.getMusicsByAlbum(categoryValue)
             MEDIA_ID_MUSICS_BY_ARTIST -> {
                 Timber.d("Not supported")
                 null

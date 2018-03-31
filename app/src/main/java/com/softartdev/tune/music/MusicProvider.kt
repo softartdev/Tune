@@ -314,7 +314,7 @@ class MusicProvider(private val context: Context) {
     }
 
     @Synchronized
-    fun updateMusic(musicId: String, metadata: MediaMetadataCompat) {
+    fun updateMusic(musicId: String?, metadata: MediaMetadataCompat) {
         val song = mMusicListByMediaId[musicId] ?: return
 
         val oldGenre = song.metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE)

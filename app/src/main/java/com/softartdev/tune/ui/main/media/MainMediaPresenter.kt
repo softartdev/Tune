@@ -24,6 +24,7 @@ constructor(private val dataManager: DataManager) : BasePresenter<MainMediaView>
                     mvpView?.showError(throwable)
                 }
 */
+        mvpView?.showProgress(false)
     }
 
     fun play(mediaId: String) {
