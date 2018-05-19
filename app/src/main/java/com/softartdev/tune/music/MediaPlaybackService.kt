@@ -31,6 +31,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.softartdev.tune.R
+import com.softartdev.tune.TuneApp
 import com.softartdev.tune.music.MediaIDHelper.MEDIA_ID_MUSICS_BY_ALBUM
 import com.softartdev.tune.music.MediaIDHelper.MEDIA_ID_MUSICS_BY_ARTIST
 import com.softartdev.tune.music.MediaIDHelper.MEDIA_ID_MUSICS_BY_PLAYLIST
@@ -41,6 +42,7 @@ import com.softartdev.tune.ui.main.MainActivity
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Provides "background" audio playback capabilities, allowing the
@@ -49,7 +51,7 @@ import java.util.*
 class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
 
     // Music catalog manager
-    private var mMusicProvider: MusicProvider? = null
+    @Inject lateinit var mMusicProvider: MusicProvider
     private var mSession: MediaSessionCompat? = null
     // "Now playing" queue:
     private var mPlayingQueue: List<MediaSessionCompat.QueueItem> = emptyList()
@@ -99,7 +101,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
         Timber.d("onCreate()")
         super.onCreate()
         Timber.d("Create MusicProvider")
-        mMusicProvider = MusicProvider(this)
+        TuneApp[this].component.inject(this)
 
         Timber.d("Create MediaSessionCompat")
         // Start a new MediaSessionCompat
@@ -162,7 +164,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
 
     override fun onLoadChildren(parentMediaId: String, result: MediaBrowserServiceCompat.Result<List<MediaItem>>) {
         Timber.d("OnLoadChildren: parentMediaId=%s", parentMediaId)
-        if (mMusicProvider?.isInitialized == true) {
+        if (mMusicProvider.isInitialized) {
             // If our music catalog is already loaded/cached, load them into result immediately
             val mediaItems = ArrayList<MediaItem>()
 
@@ -192,7 +194,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
                 }
                 MEDIA_ID_MUSICS_BY_ARTIST -> {
                     Timber.d("OnLoadChildren.ARTIST")
-                    for (artist in mMusicProvider?.artists ?: emptyList()) {
+                    for (artist in mMusicProvider.artists) {
                         val item = MediaItem(
                                 MediaDescriptionCompat.Builder()
                                         .setMediaId(MediaIDHelper.createBrowseCategoryMediaID(MEDIA_ID_MUSICS_BY_ARTIST, artist))
@@ -204,7 +206,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
                 }
                 MEDIA_ID_MUSICS_BY_PLAYLIST -> {
                     Timber.d("OnLoadChildren.PLAYLIST")
-                    for (playlist in mMusicProvider?.playlists ?: emptyList()) {
+                    for (playlist in mMusicProvider.playlists) {
                         val item = MediaItem(
                                 MediaDescriptionCompat.Builder()
                                         .setMediaId(MediaIDHelper.createBrowseCategoryMediaID(MEDIA_ID_MUSICS_BY_PLAYLIST, playlist))
@@ -216,30 +218,28 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
                 }
                 MEDIA_ID_MUSICS_BY_ALBUM -> {
                     Timber.d("OnLoadChildren.ALBUM")
-                    loadAlbum(mMusicProvider?.albums ?: emptyList(), mediaItems)
+                    loadAlbum(mMusicProvider.albums, mediaItems)
                 }
                 MEDIA_ID_MUSICS_BY_SONG -> {
                     Timber.d("OnLoadChildren.SONG")
                     val hierarchyAwareMediaID = MediaIDHelper.createBrowseCategoryMediaID(parentMediaId, MEDIA_ID_MUSICS_BY_SONG)
-                    loadSong(mMusicProvider?.musicList ?: emptyList(), mediaItems, hierarchyAwareMediaID)
+                    loadSong(mMusicProvider.musicList, mediaItems, hierarchyAwareMediaID)
                 }
                 else -> if (parentMediaId.startsWith(MEDIA_ID_MUSICS_BY_ARTIST)) {
                     val artist = MediaIDHelper.getHierarchy(parentMediaId)[1]
                     Timber.d("OnLoadChildren.SONGS_BY_ARTIST  artist=%s", artist)
-                    loadAlbum(mMusicProvider?.getAlbumByArtist(artist) ?: emptyList(), mediaItems)
+                    loadAlbum(mMusicProvider.getAlbumByArtist(artist), mediaItems)
                 } else if (parentMediaId.startsWith(MEDIA_ID_MUSICS_BY_ALBUM)) {
                     val album = MediaIDHelper.getHierarchy(parentMediaId)[1]
                     Timber.d("OnLoadChildren.SONGS_BY_ALBUM  album=%s", album)
-                    loadSong(mMusicProvider?.getMusicsByAlbum(album)
-                            ?: emptyList(), mediaItems, parentMediaId)
+                    loadSong(mMusicProvider.getMusicsByAlbum(album), mediaItems, parentMediaId)
                 } else if (parentMediaId.startsWith(MEDIA_ID_MUSICS_BY_PLAYLIST)) {
                     val playlist = MediaIDHelper.getHierarchy(parentMediaId)[1]
                     Timber.d("OnLoadChildren.SONGS_BY_PLAYLIST playlist=%s", playlist)
                     if (playlist == MEDIA_ID_NOW_PLAYING && mPlayingQueue.isNotEmpty()) {
                         loadPlayingQueue(mediaItems)
                     } else {
-                        loadSong(mMusicProvider?.getMusicsByPlaylist(playlist)
-                                ?: emptyList(), mediaItems, parentMediaId)
+                        loadSong(mMusicProvider.getMusicsByPlaylist(playlist), mediaItems, parentMediaId)
                     }
                 } else {
                     Timber.w("Skipping unmatched parentMediaId: %s", parentMediaId)
@@ -250,7 +250,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
         } else {
             // Use result.detach to allow calling result.sendResult from another thread:
             result.detach()
-            mMusicProvider?.retrieveMediaAsync(object : MusicProvider.MusicProviderCallback {
+            mMusicProvider.retrieveMediaAsync(object : MusicProvider.MusicProviderCallback {
                 override fun onMusicCatalogReady(success: Boolean) {
                     Timber.d("Received catalog result, success:  %s", success.toString())
                     if (success) {
@@ -277,15 +277,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
             songExtra.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION))
             val title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
             val artistName = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-            val item = MediaItem(
-                    MediaDescriptionCompat.Builder()
-                            .setMediaId(hierarchyAwareMediaID)
-                            .setTitle(title)
-                            .setSubtitle(artistName)
-                            .setIconBitmap(metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
-                            .setExtras(songExtra)
-                            .build(),
-                    MediaItem.FLAG_PLAYABLE)
+            val description: MediaDescriptionCompat = with(MediaDescriptionCompat.Builder()) {
+                setMediaId(hierarchyAwareMediaID)
+                setTitle(title)
+                setSubtitle(artistName)
+                setIconBitmap(metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
+                setExtras(songExtra)
+                build()
+            }
+            val item = MediaItem(description, MediaItem.FLAG_PLAYABLE)
             mediaItems.add(item)
         }
     }
@@ -313,7 +313,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
         override fun onPlay() {
             Timber.d("play")
             if (mPlayingQueue.isEmpty()) {
-                mMusicProvider?.let { mPlayingQueue = QueueHelper.getRandomQueue(it) }
+                mMusicProvider.let { mPlayingQueue = QueueHelper.getRandomQueue(it) }
                 mSession?.setQueue(mPlayingQueue)
                 mSession?.setQueueTitle(getString(R.string.random_queue_title))
                 // start playing from the beginning of the queue
@@ -410,11 +410,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
                 // A generic search like "Play music" sends an empty query
                 // and it's expected that we start playing something. What will be played depends
                 // on the app: favorite playlist, "I'm feeling lucky", most recent, etc.
-                mMusicProvider?.let { QueueHelper.getRandomQueue(it) }
+                mMusicProvider.let { QueueHelper.getRandomQueue(it) }
             } else {
-                mMusicProvider?.let { QueueHelper.getPlayingQueueFromSearch(query as String, it) }
-            } ?: emptyList()
-            Timber.d("playFromSearch  playqueue.length=%s", mPlayingQueue.size)
+                mMusicProvider.let { QueueHelper.getPlayingQueueFromSearch(query as String, it) }
+            }
+            Timber.d("playFromSearch  play queue.length=%s", mPlayingQueue.size)
             mSession?.setQueue(mPlayingQueue)
             if (mPlayingQueue.isNotEmpty()) {
                 // immediately start playing from the beginning of the search results
@@ -435,7 +435,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
                     mSession?.setExtras(mExtras)
                     Timber.d("modified repeatMode=%s", mRepeatMode)
                 }
-                else -> Timber.d("Unkown action=%s", action)
+                else -> Timber.d("Unknown action=%s", action)
             }
         }
     }
@@ -501,7 +501,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
         }
         val queueItem = mPlayingQueue[mCurrentIndexOnQueue]
         val musicId = MediaIDHelper.extractMusicIDFromMediaID(queueItem.description.mediaId)
-        val track = mMusicProvider?.getMusicByMediaId(musicId)?.metadata
+        val track = mMusicProvider.getMusicByMediaId(musicId)?.metadata
         val trackId = track?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
         if (musicId != trackId) {
             val e = IllegalStateException("track ID should match musicId.")
@@ -517,16 +517,16 @@ class MediaPlaybackService : MediaBrowserServiceCompat(), Playback.Callback {
             val albumUri = track.description.iconUri.toString()
             AlbumArtCache.fetch(albumUri, object : AlbumArtCache.FetchListener() {
                 override fun onFetched(artUrl: String, bigImage: Bitmap, iconImage: Bitmap) {
-                    var trackMetadata = mMusicProvider?.getMusicByMediaId(trackId)?.metadata
+                    var trackMetadata = mMusicProvider.getMusicByMediaId(trackId)?.metadata
                     trackMetadata = MediaMetadataCompat.Builder(trackMetadata)
                             // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
-                            // example, on the lockscreen background when the media session is active.
+                            // example, on the lock screen background when the media session is active.
                             .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bigImage)
                             // set small version of the album art in the DISPLAY_ICON. This is used on
                             // the MediaDescriptionCompat and thus it should be small to be serialized if necessary..
                             .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, iconImage)
                             .build()
-                    mMusicProvider?.updateMusic(trackId, trackMetadata)
+                    mMusicProvider.updateMusic(trackId, trackMetadata)
                     // If we are still playing the same music
                     val currentPlayingId = MediaIDHelper.extractMusicIDFromMediaID(queueItem.description.mediaId)
                     if (trackId == currentPlayingId) {

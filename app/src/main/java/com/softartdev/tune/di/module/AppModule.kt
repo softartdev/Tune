@@ -6,7 +6,7 @@ import com.softartdev.tune.di.ApplicationContext
 import dagger.Module
 import dagger.Provides
 
-@Module/*(includes = [MediaModule::class])*/
+@Module(includes = [MediaModule::class])
 class AppModule(private val application: Application) {
 
     @Provides

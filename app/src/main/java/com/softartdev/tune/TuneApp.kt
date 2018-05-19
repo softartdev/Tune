@@ -5,6 +5,7 @@ import android.content.Context
 import com.softartdev.tune.di.component.AppComponent
 import com.softartdev.tune.di.component.DaggerAppComponent
 import com.softartdev.tune.di.module.AppModule
+import com.softartdev.tune.di.module.MediaModule
 import timber.log.Timber
 
 class TuneApp : Application() {
@@ -25,6 +26,7 @@ class TuneApp : Application() {
             if (appComponent == null) {
                 appComponent = DaggerAppComponent.builder()
                         .appModule(AppModule(this))
+                        .mediaModule(MediaModule())
                         .build()
             }
             return appComponent as AppComponent
