@@ -58,13 +58,10 @@ class MusicProvider(private val context: Context) {
         const val UNKNOWN = "UNKNOWN"
         // Uri source of this track
         const val CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__"
-        // Content select criteria
-        private const val MUSIC_SELECT_FILTER = MediaStore.Audio.Media.IS_MUSIC + " != 0"
         private const val MUSIC_SORT_ORDER = MediaStore.Audio.Media.TITLE + " ASC"
     }
 
-    @Volatile
-    private var mCurrentState = State.NON_INITIALIZED
+    @Volatile private var mCurrentState = State.NON_INITIALIZED
 
     val isInitialized: Boolean
         get() = mCurrentState == State.INITIALIZED
@@ -211,7 +208,7 @@ class MusicProvider(private val context: Context) {
 
     @Synchronized
     private fun retrieveMedia(): Boolean {
-        val cursor = context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, MUSIC_SELECT_FILTER, null, MUSIC_SORT_ORDER)
+        val cursor = context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MUSIC_SORT_ORDER)
         if (cursor == null) {
             Timber.e("Failed to retreive music: cursor is null")
             mCurrentState = State.NON_INITIALIZED

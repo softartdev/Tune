@@ -1,6 +1,5 @@
 package com.softartdev.tune.ui.main.media
 
-import com.softartdev.tune.data.DataManager
 import com.softartdev.tune.di.ConfigPersistent
 import com.softartdev.tune.ui.base.BasePresenter
 import timber.log.Timber
@@ -8,7 +7,7 @@ import javax.inject.Inject
 
 @ConfigPersistent
 class MainMediaPresenter @Inject
-constructor(private val dataManager: DataManager) : BasePresenter<MainMediaView>() {
+constructor(/*private val dataManager: DataManager*/) : BasePresenter<MainMediaView>() {
 
     fun mediaItems() {
         checkViewAttached()
